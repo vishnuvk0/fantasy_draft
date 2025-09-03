@@ -4,27 +4,27 @@ A Python script that generates fair and deterministic fantasy draft order using 
 
 ## How it works
 
-1. Uses team names from `team_names.txt` combined with owner names
-2. Generates SHA-256 hashes for each team
+1. `govt_first_name`.append(`team_name`). using team names from `team_names.txt`.
+2. Generates SHA-256 hashes for each person
 3. Sorts teams by hash value (ascending) to determine draft order
-4. Provides fallback mechanism for missing team names
+4. fallback mechanism first_name + "ganeshcock"+ `date_time` for missing team names.
 
 ## Usage
-
+run by a github actions workflow.
+https://github.com/vishnuvk0/fantasy_draft/actions
 ```bash
-python src/fantasy_final.py
+python3 src/fantasy_final.py
 ```
 
 ## Features
 
 - **Deterministic**: Same team names always produce the same order
 - **Fair**: SHA-256 ensures unpredictable but consistent ordering
-- **Auditable**: Shows hash material and timestamp for verification
-- **Flexible**: Handles missing/invalid team names with fallbacks
+- **Auditable**: hash material and timestamp for verification
 
 ## Output
 
 The script displays:
 - Draft order (1st pick, 2nd pick, etc.)
 - Team names and SHA-256 hashes
-- Audit information including hash materials
+- Audit info
