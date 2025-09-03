@@ -53,11 +53,8 @@ def save_team_names(team_names: list[str]) -> None:
     TEAM_FILE.write_text("\n".join(team_names), encoding="utf-8")
 
 def main():
-    print("Fantasy Draft Hashing with team_names.txt")
-    print("- Enter to keep the existing team name from file.")
-    print("- Enter a new value to replace it.")
-    print("- If the file line is empty AND you press Enter → fallback is used.")
-    print("- Hash input is government name (lowercase) + team name (no delimiter).")
+    print("Fantasy Draft Order Generator")
+    print("Using existing team names from file.")
     print()
 
     team_names = load_team_names()
@@ -65,37 +62,17 @@ def main():
     # One timestamp per run for all fallbacks
     run_ts = datetime.now(PACIFIC_TZ).isoformat()
 
-    # Collect finalized names (as entered/kept) for hashing and for saving
+    # Collect finalized names for hashing and for saving
     finalized_team_names: list[str] = []
 
     for idx, gov_name in enumerate(NAMES):
         current = team_names[idx]
-        while True:
-            prompt_suffix = f" [current: {current}]" if current else " [current: <empty>]"
-            user = input(f"Team name for {gov_name}:{prompt_suffix} -> ").rstrip("\n")
-
-            if user == "":
-                # Keep existing if present
-                if current:
-                    # Keeping existing as-is; validate to ensure constraints still hold
-                    if not is_valid_team_name(current):
-                        print("  The existing team name in the file is invalid "
-                              "(must not start/end with a space).")
-                        print("  Please enter a corrected name (non-empty) or enter a blank to use fallback.")
-                        continue
-                    finalized_team_names.append(current)
-                    break
-                else:
-                    # No existing name and user pressed Enter → fallback case
-                    finalized_team_names.append("")  # marker for fallback later
-                    break
-            else:
-                # User typed a replacement; must validate if non-empty
-                if not is_valid_team_name(user):
-                    print("  Invalid: team name must start and end with a non-space character. Try again.")
-                    continue
-                finalized_team_names.append(user)
-                break
+        
+        # Use existing names or fallback
+        if current and is_valid_team_name(current):
+            finalized_team_names.append(current)
+        else:
+            finalized_team_names.append("")  # marker for fallback later
 
     # Persist any edits (non-empty kept or replaced; empty lines stay empty)
     save_team_names(finalized_team_names)
