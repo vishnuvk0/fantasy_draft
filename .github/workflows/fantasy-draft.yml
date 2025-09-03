@@ -1,0 +1,48 @@
+name: Fantasy Draft Order Generator
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  generate-draft-order:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Run fantasy draft script
+      id: draft
+      run: |
+        cd src
+        echo "Running fantasy draft order generation..."
+        python3 fantasy_final.py > ../draft_output.txt 2>&1
+        echo "Draft order generation completed"
+        
+    - name: Display results
+      run: |
+        echo "Fantasy draft script execution completed!"
+        echo "Draft order results:"
+        cat draft_output.txt
+        
+    - name: Create summary
+      run: |
+        echo "## Fantasy Draft Results 🏈" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The fantasy draft order has been generated based on the current team names." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Draft Order:" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat draft_output.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Triggered by:** Changes to any file in the repository" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
