@@ -24,7 +24,7 @@ jobs:
       run: |
         cd src
         echo "Running fantasy draft order generation..."
-        python fantasy_final.py < /dev/null || true
+        python3 fantasy_final.py
         echo "Draft order generation completed"
         
     - name: Display results
