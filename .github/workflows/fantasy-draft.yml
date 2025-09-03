@@ -2,8 +2,6 @@ name: Fantasy Draft Order Generator
 
 on:
   push:
-    paths:
-      - 'src/team_names.txt'
   workflow_dispatch:
 
 jobs:
@@ -38,7 +36,7 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "The fantasy draft order has been generated based on the current team names." >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Triggered by:** Changes to \`src/team_names.txt\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Triggered by:** Changes to any file in the repository" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
