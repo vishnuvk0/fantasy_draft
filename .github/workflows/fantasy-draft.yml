@@ -5,6 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   generate-draft-order:
     runs-on: ubuntu-latest
@@ -32,6 +35,21 @@ jobs:
         echo "Draft order results:"
         cat draft_output.txt
         
+    - name: Update GitHub Pages
+      run: |
+        # Create updated HTML with results
+        TIMESTAMP=$(date -u)
+        cp docs/index.html docs/index_temp.html
+        
+        # Escape the draft output for HTML
+        DRAFT_CONTENT=$(cat draft_output.txt | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
+        
+        # Replace placeholders
+        sed -i "s/TIMESTAMP_PLACEHOLDER/$TIMESTAMP/g" docs/index_temp.html
+        sed -i "s/DRAFT_OUTPUT_PLACEHOLDER/$DRAFT_CONTENT/g" docs/index_temp.html
+        
+        mv docs/index_temp.html docs/index.html
+        
     - name: Create summary
       run: |
         echo "## Fantasy Draft Results 🏈" >> $GITHUB_STEP_SUMMARY
@@ -43,6 +61,20 @@ jobs:
         cat draft_output.txt >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🌐 **Public Results:** https://viviku.github.io/fantasy_draft/" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
         echo "**Triggered by:** Changes to any file in the repository" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+        
+    - name: Commit and push updated results
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add docs/index.html
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update draft results - $(date -u)"
+          git push
+        fi
